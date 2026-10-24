@@ -1,0 +1,312 @@
+<title>199 备考总览</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+  /* Design plan — 备考总览：纸质暖底 + 朱砂强调，宋体数字做倒计时 */
+  :root{
+    --bg:#f7f2ea; --fg:#2b2520; --fg-soft:#463e35; --muted:#857868;
+    --accent:#b23a2c; --accent-ink:#fff8f3; --accent-soft:#f4e1da;
+    --border:#e4d8c8; --card:#fffdf8; --good:#2f7d3a; --good-bg:#e7efe2;
+    --font-display:"Noto Serif SC","Songti SC","SimSun",serif;
+    --font-body:system-ui,-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1a1511; --fg:#ece4d9; --fg-soft:#d2c7b7; --muted:#a08f7c;
+      --accent:#e06f5b; --accent-ink:#1c0f0b; --accent-soft:#3a251e;
+      --border:#3a3229; --card:#221c16; --good:#7cbd85; --good-bg:#24301f;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1a1511; --fg:#ece4d9; --fg-soft:#d2c7b7; --muted:#a08f7c;
+    --accent:#e06f5b; --accent-ink:#1c0f0b; --accent-soft:#3a251e;
+    --border:#3a3229; --card:#221c16; --good:#7cbd85; --good-bg:#24301f;
+    color-scheme:dark;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:var(--font-body); font-size:15px; line-height:1.65;
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+    padding-block:28px 56px;
+  }
+  .wrap{ max-width:760px; margin:0 auto; }
+  .eyebrow{ font-size:12px; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; font-weight:600; }
+  h1{ font-family:var(--font-display); font-size:26px; margin:.4em 0 .2em; font-weight:700; text-wrap:balance; }
+  .lede{ color:var(--fg-soft); margin:0 0 20px; }
+
+  /* 倒计时 hero */
+  .hero{ background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px 22px 20px; }
+  .hero .row{ display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  .count{ font-family:var(--font-display); font-weight:700; font-size:64px; line-height:1; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .count small{ font-size:20px; font-weight:600; margin-left:4px; color:var(--muted); }
+  .count-sub{ color:var(--fg-soft); margin-top:10px; }
+
+  /* 数据条 */
+  .tiles{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 28px; }
+  .tile{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+  .tile .k{ font-size:12px; color:var(--muted); }
+  .tile .v{ font-size:18px; font-weight:700; margin-top:2px; font-variant-numeric:tabular-nums; }
+
+  h2{ font-family:var(--font-display); font-size:19px; margin:28px 0 12px; font-weight:700; }
+  .phase-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .phase{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; position:relative; }
+  .phase .no{ font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--muted); }
+  .phase .nm{ font-weight:700; margin-top:2px; }
+  .phase .rg{ font-size:12px; color:var(--muted); margin-top:4px; }
+  .phase .dy{ font-size:12px; color:var(--muted); }
+  .phase.now{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+  .phase.now .no{ color:var(--accent); }
+  .phase.now::after{ content:"当前"; position:absolute; top:10px; right:10px; font-size:11px; color:var(--accent-ink); background:var(--accent); border-radius:20px; padding:1px 8px; font-weight:600; }
+  .phase.done .no{ color:var(--good); }
+
+  /* 打卡 */
+  .progress{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:14px; }
+  .bar{ flex:1; height:10px; background:var(--border); border-radius:10px; overflow:hidden; }
+  .bar i{ display:block; height:100%; background:var(--accent); width:0; border-radius:10px; transition:width .25s; }
+  .pct{ font-weight:700; font-variant-numeric:tabular-nums; color:var(--accent); min-width:44px; text-align:right; }
+  .pct small{ color:var(--muted); font-weight:500; }
+
+  .task-group{ margin-top:16px; }
+  .task-group > h3{ font-size:14px; color:var(--fg-soft); margin:0 0 8px; display:flex; align-items:center; gap:8px; }
+  .task-group > h3 .tag{ font-size:11px; color:var(--muted); font-weight:500; }
+  ul.tasks{ list-style:none; margin:0; padding:0; }
+  .tasks li{ margin:0; }
+  .tasks label{ display:flex; align-items:flex-start; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; }
+  .tasks label:hover{ background:var(--accent-soft); }
+  .tasks input{ margin-top:4px; accent-color:var(--accent); width:16px; height:16px; flex:none; }
+  .tasks span{ flex:1; min-width:0; }
+  .tasks input:checked + span{ color:var(--muted); text-decoration:line-through; }
+
+  /* 公式 */
+  .formulas{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .f{ background:var(--card); border:1px solid var(--border); border-radius:10px; padding:11px 14px; }
+  .f .t{ font-size:12px; color:var(--muted); }
+  .f .e{ font-family:var(--font-display); font-size:15px; font-weight:600; margin-top:2px; font-variant-numeric:tabular-nums; }
+
+  /* 分数表 */
+  .table-wrap{ background:var(--card); border:1px solid var(--border); border-radius:12px; overflow-x:auto; }
+  table{ border-collapse:collapse; width:100%; min-width:460px; font-variant-numeric:tabular-nums; }
+  th,td{ text-align:left; padding:10px 14px; font-size:14px; }
+  th{ font-weight:600; color:var(--muted); border-bottom:1px solid var(--border); font-size:12px; letter-spacing:.02em; }
+  td{ border-bottom:1px solid var(--border); }
+  tr:last-child td{ border-bottom:none; }
+  td.b{ font-weight:700; color:var(--accent); }
+
+  .foot{ margin-top:26px; font-size:13px; color:var(--muted); border-top:1px solid var(--border); padding-top:14px; }
+  .foot code{ font-family:ui-monospace,Consolas,monospace; background:var(--accent-soft); padding:1px 6px; border-radius:5px; font-size:12px; }
+  button.reset{ margin-top:14px; background:none; border:1px solid var(--border); color:var(--muted); padding:5px 12px; border-radius:8px; cursor:pointer; font-size:12px; }
+  button.reset:hover{ color:var(--accent); border-color:var(--accent); }
+
+  @media (max-width:640px){
+    .tiles{ grid-template-columns:repeat(2,1fr); }
+    .phase-grid{ grid-template-columns:repeat(2,1fr); }
+    .formulas{ grid-template-columns:1fr; }
+    .count{ font-size:52px; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">199 管理类联考 · 备考总览</div>
+    <div class="row">
+      <div>
+        <h1 style="margin-bottom:.2em">上岸倒计时</h1>
+        <div class="count"><span id="days">—</span><small>天</small></div>
+      </div>
+      <div class="count-sub" id="countSub">考试时间：2026 年 12 月 19 日（周六）上午 8:30 – 11:30，共 3 小时。</div>
+    </div>
+  </header>
+
+  <div class="tiles">
+    <div class="tile"><div class="k">当前阶段</div><div class="v" id="phaseNow">—</div></div>
+    <div class="tile"><div class="k">考试总分</div><div class="v">200 分</div></div>
+    <div class="tile"><div class="k">三科分值</div><div class="v" style="font-size:14px">数学75 · 逻辑60 · 写作65</div></div>
+    <div class="tile"><div class="k">建议日投入</div><div class="v" style="font-size:16px">在职 3h · 全职 6h</div></div>
+  </div>
+
+  <h2>四阶段计划</h2>
+  <div class="phase-grid" id="phaseGrid"></div>
+
+  <h2>任务打卡</h2>
+  <div class="progress">
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="pct"><span id="pctN">0</span><small> / <span id="pctT">0</span></small></div>
+  </div>
+  <div id="taskList"></div>
+  <button class="reset" id="resetBtn">重置打卡进度</button>
+
+  <h2>高频公式速记</h2>
+  <div class="formulas" id="formulas"></div>
+
+  <h2>目标分数参考</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>目标</th><th>数学</th><th>逻辑</th><th>写作</th><th>总分</th></tr></thead>
+      <tbody>
+        <tr><td>保底（过国家线）</td><td>45</td><td>36</td><td>40</td><td class="b">121</td></tr>
+        <tr><td>良好（211 / MBA 主流）</td><td>55</td><td>46</td><td>46</td><td class="b">147</td></tr>
+        <tr><td>冲刺（985 / MPAcc 热门）</td><td>63</td><td>52</td><td>50</td><td class="b">165</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="foot">
+    完整知识要点在本地文件：<code>00-学习计划.md</code>（计划）、<code>01-数学-知识要点.md</code>、<code>02-逻辑-知识要点.md</code>、<code>03-写作-知识要点.md</code>。打卡进度保存在本机浏览器，仅自己可见。
+  </p>
+</div>
+
+<script>
+(function(){
+  var EXAM = new Date(2026, 11, 19, 8, 30); // 2026-12-19 08:30
+  var phases = [
+    { name:"基础夯实", range:"10.24 – 11.06", days:"14 天", start:[2026,10,24], end:[2026,11,6], tasks:[
+      "数学：算术 + 代数（整式·分式·函数）",
+      "数学：方程·不等式·数列",
+      "数学：几何（平面·立体·解析）",
+      "数学：数据分析（排列组合·概率）",
+      "逻辑：概念与直言判断",
+      "逻辑：联言·选言·假言判断",
+      "逻辑：三段论与论证入门",
+      "写作：通读两种文体 + 积累素材"
+    ]},
+    { name:"强化提升", range:"11.07 – 11.27", days:"21 天", start:[2026,11,7], end:[2026,11,27], tasks:[
+      "数学：条件充分性判断专项",
+      "数学：代数应用题（行程·工程·利润·浓度）",
+      "数学：数列与不等式综合",
+      "数学：几何 + 排列组合概率综合",
+      "逻辑：形式逻辑（假言·选言·德摩根）",
+      "逻辑：论证逻辑四题型（削弱·加强·假设·结论）",
+      "逻辑：综合推理（排序·匹配·分组）",
+      "写作：论证有效性分析 ×3 篇/周",
+      "写作：论说文 ×2 篇/周"
+    ]},
+    { name:"真题模考", range:"11.28 – 12.11", days:"14 天", start:[2026,11,28], end:[2026,12,11], tasks:[
+      "真题第一遍：近 10 年套卷（限时 180 分钟）",
+      "错题归类：统计三科用时与正确率",
+      "真题第二遍 + 近 3 年全真模考",
+      "薄弱章节回炉"
+    ]},
+    { name:"冲刺调整", range:"12.12 – 12.18", days:"7 天", start:[2026,12,12], end:[2026,12,18], tasks:[
+      "错题本全过一遍",
+      "默写公式 + 背诵写作模板",
+      "轻量保温：每科每日 10 题",
+      "考前准备：作息·文具·证件"
+    ]}
+  ];
+
+  // 倒计时
+  var dLeft = Math.ceil((EXAM - Date.now()) / 86400000);
+  var daysEl = document.getElementById("days");
+  var subEl = document.getElementById("countSub");
+  if (dLeft > 0) {
+    daysEl.textContent = dLeft;
+  } else if (dLeft === 0) {
+    daysEl.textContent = 0; daysEl.nextSibling.textContent = "天 · 考试日";
+  } else {
+    daysEl.textContent = "—"; subEl.textContent = "考试已结束。";
+  }
+
+  // 当前阶段
+  function phaseOf(d){
+    for (var i=0;i<phases.length;i++){
+      var s=new Date(phases[i].start[0],phases[i].start[1]-1,phases[i].start[2]);
+      var e=new Date(phases[i].end[0],phases[i].end[1]-1,phases[i].end[2],23,59,59);
+      if (d>=s && d<=e) return i;
+    }
+    if (d < new Date(phases[0].start[0],phases[0].start[1]-1,phases[0].start[2])) return -1;
+    return phases.length;
+  }
+  var now = new Date();
+  var pi = phaseOf(now);
+  var phaseNow = document.getElementById("phaseNow");
+  if (pi < 0) phaseNow.textContent = "未开始";
+  else if (pi >= phases.length) phaseNow.textContent = "已结束";
+  else phaseNow.textContent = "阶段" + (pi+1) + " · " + phases[pi].name;
+
+  // 阶段时间轴
+  var grid = document.getElementById("phaseGrid");
+  phases.forEach(function(ph, i){
+    var div = document.createElement("div");
+    div.className = "phase" + (i===pi ? " now" : "") + (i<pi ? " done" : "");
+    div.innerHTML = '<div class="no">' + String(i+1).padStart(2,"0") + '</div>' +
+      '<div class="nm">' + ph.name + '</div>' +
+      '<div class="rg">' + ph.range + '</div><div class="dy">' + ph.days + '</div>';
+    grid.appendChild(div);
+  });
+
+  // 打卡数据
+  var KEY = "199exam-checklist-v1";
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+  function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+  var state = load();
+
+  var list = document.getElementById("taskList");
+  var total = 0, done = 0;
+  phases.forEach(function(ph, pi){
+    var g = document.createElement("div"); g.className = "task-group";
+    var h = document.createElement("h3");
+    h.innerHTML = '<span>阶段' + (pi+1) + ' · ' + ph.name + '</span><span class="tag">' + ph.range + '</span>';
+    g.appendChild(h);
+    var ul = document.createElement("ul"); ul.className = "tasks";
+    ph.tasks.forEach(function(t, ti){
+      var id = "p" + pi + "-" + ti;
+      total++;
+      var checked = !!state[id]; if (checked) done++;
+      var li = document.createElement("li");
+      var label = document.createElement("label");
+      var cb = document.createElement("input");
+      cb.type = "checkbox"; cb.checked = checked; cb.id = "t-" + id;
+      cb.addEventListener("change", function(){ state[id] = cb.checked; save(state); render(); });
+      var span = document.createElement("span"); span.textContent = t;
+      label.appendChild(cb); label.appendChild(span); li.appendChild(label); ul.appendChild(li);
+    });
+    g.appendChild(ul); list.appendChild(g);
+  });
+
+  function render(){
+    var c = 0;
+    phases.forEach(function(ph, pi){
+      ph.tasks.forEach(function(t, ti){
+        var id = "p" + pi + "-" + ti;
+        var el = document.getElementById("t-" + id);
+        if (el && el.checked) c++;
+      });
+    });
+    var pct = total ? Math.round(c/total*100) : 0;
+    document.getElementById("pctN").textContent = c;
+    document.getElementById("pctT").textContent = total;
+    document.getElementById("barFill").style.width = pct + "%";
+  }
+  document.getElementById("pctT").textContent = total;
+  render();
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    state = {}; save(state);
+    phases.forEach(function(ph, pi){ ph.tasks.forEach(function(t, ti){
+      var el = document.getElementById("t-p" + pi + "-" + ti); if (el) el.checked = false;
+    }); });
+    render();
+  });
+
+  // 公式
+  var formulas = [
+    ["韦达定理","x₁+x₂ = -b/a，x₁x₂ = c/a"],
+    ["数列求和","等差 Sₙ = n(a₁+aₙ)/2；等比 Sₙ = a₁(1-qⁿ)/(1-q)"],
+    ["排列组合","Aₙᵐ = n!/(n-m)!；Cₙᵐ = n!/(m!(n-m)!)"],
+    ["概率加法/独立","P(A∪B)=P(A)+P(B)-P(AB)；独立 P(AB)=P(A)P(B)"],
+    ["特殊三角形","30-60-90 边长比 1 : √3 : 2"],
+    ["点到直线距离","d = |Ax₀+By₀+C| / √(A²+B²)"],
+    ["假言推理","只有肯前/否后有效；逆否：p→q ⟺ ¬q→¬p"],
+    ["德摩根律","¬(p∧q) = ¬p∨¬q；¬(p∨q) = ¬p∧¬q"]
+  ];
+  var fwrap = document.getElementById("formulas");
+  formulas.forEach(function(f){
+    var d = document.createElement("div"); d.className = "f";
+    d.innerHTML = '<div class="t">' + f[0] + '</div><div class="e">' + f[1] + '</div>';
+    fwrap.appendChild(d);
+  });
+})();
+</script>
